@@ -24,29 +24,19 @@ async function run() {
 
         const partsCollection = client.db('ifad_autos').collection('parts')
 
+
         app.get('/part', async (req, res) => {
-            const quote = {};
-            const result = await partsCollection.find(quote).toArray()
+            const query = {};
+            const result = await partsCollection.find(query).toArray()
             res.send(result)
         })
-
-        app.get('/purchase/:id'), async (req, res) =>{
+        
+        
+        app.get('/part/:id', async (req, res)=>{
             const id = req.params.id;
-            console.log(id) 
             const query = {_id: ObjectId(id)}
-            const part = await partsCollection.fondOne(query)
-            res.send(part)
-        }
-
-
-
-
-        app.get('/', (req, res) => {
-            res.send('IFAD Server Connected')
-        })
-
-        app.listen(port, () => {
-            console.log('ifad server start with', port)
+            const result = await partsCollection.findOne(query);
+            res.send(result)
         })
     }
     finally {
@@ -57,3 +47,11 @@ async function run() {
 
 
 run().catch(console.dir);
+
+app.get('/', (req, res) => {
+    res.send('IFAD Server Connected')
+})
+
+app.listen(port, () => {
+    console.log('ifad server start with', port)
+})
