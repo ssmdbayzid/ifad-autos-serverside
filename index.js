@@ -23,6 +23,9 @@ async function run() {
         await client.connect()
 
         const partsCollection = client.db('ifad_autos').collection('parts')
+        const userCollection = client.db('ifad_autos').collection('user')
+        const bookingCollection = client.db('ifad_autos').collection('purchase')
+        const reviewCollection = client.db('ifad_autos').collection('review')
 
 
         app.get('/part', async (req, res) => {
@@ -38,6 +41,69 @@ async function run() {
             const result = await partsCollection.findOne(query);
             res.send(result)
         })
+
+        app.get('/purchased', async (req, res)=>{
+            const email =  req.query.email;
+            console.log(email)
+            const query = {client: email}
+            const result = await bookingCollection.find(query).toArray()
+            res.send(result)
+        })
+        
+        app.get('/review', async(req, res)=>{
+            const query = {}
+            const result = await reviewCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.post('/review', async(req, res)=>{
+            const addReview = req.body;
+            const result = await reviewCollection.insertOne(addReview)
+            res.send(result)
+        })
+        app.delete('/purchased/:id', async (req, res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await bookingCollection.deleteOne(query)
+            res.send(result)
+        })
+        app.post('/user', async(req, res)=>{
+            const name = req.body.name;
+            console.log(name)
+            const email = req.body.email;
+            const user = {
+                name: name,
+                email: email,
+            }
+            const result = await userCollection.insertOne(user)
+            res.send(result)            
+        })
+
+        app.put('/part/:id', async (req, res)=>{
+            const id = req.params.id;
+            console.log(id)
+            const balQty = req.body.balQty;
+
+            const filter = {_id: ObjectId(id)}
+            const options = {upsert : true}
+            const avail_Qty = {
+                Available_Qty: balQty
+            }
+            const result = await partsCollection.updateOne(filter, avail_Qty, options);
+            res.send(result)
+        })
+
+        app.post('/purchase', async(req, res)=>{
+            const part = req.body;
+            const result = await bookingCollection.insertOne(part);
+            res.send(result)
+        })
+
+
+
+
+
+
     }
     finally {
         // await client.close();
