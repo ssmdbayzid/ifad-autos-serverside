@@ -42,6 +42,11 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/allOrder', async (req, res)=>{
+            const query = {}
+            const result = await bookingCollection.find(query).toArray()
+            res.send(result)
+        })
         app.get('/purchased', async (req, res)=>{
             const email =  req.query.email;
             console.log(email)
@@ -49,6 +54,7 @@ async function run() {
             const result = await bookingCollection.find(query).toArray()
             res.send(result)
         })
+
         
         app.get('/review', async(req, res)=>{
             const query = {}
@@ -61,22 +67,41 @@ async function run() {
             const result = await reviewCollection.insertOne(addReview)
             res.send(result)
         })
+
         app.delete('/purchased/:id', async (req, res)=>{
             const id = req.params.id;
             const query = {_id: ObjectId(id)}
             const result = await bookingCollection.deleteOne(query)
             res.send(result)
         })
+
         app.post('/user', async(req, res)=>{
-            const name = req.body.name;
-            console.log(name)
-            const email = req.body.email;
-            const user = {
-                name: name,
-                email: email,
-            }
+            const user = req.body;
             const result = await userCollection.insertOne(user)
             res.send(result)            
+        })
+
+        app.get('/user', async(req, res)=>{
+            const query = {}
+            const result = await userCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.delete('/user/:id', async (req, res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await userCollection.deleteOne(query)
+            res.send(result)
+        })
+
+        app.put('/admin/user/:email', async (req, res)=>{
+            const email = req.params.email;
+            const filter = {email: email};
+            const updateDoc = {
+                $set : {role: 'Admin'}
+            }
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result)
         })
 
         app.put('/part/:id', async (req, res)=>{
@@ -93,9 +118,16 @@ async function run() {
             res.send(result)
         })
 
+        app.delete('/part/:id', async (req, res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await bookingCollection.deleteOne(query)
+            res.send(result)
+        })
+
         app.post('/purchase', async(req, res)=>{
             const part = req.body;
-            const result = await bookingCollection.insertOne(part);
+            const result = await partsCollection.insertOne(part);
             res.send(result)
         })
 
