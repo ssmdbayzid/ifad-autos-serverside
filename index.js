@@ -36,6 +36,7 @@ async function run() {
         
         app.post('/part', async (req, res) => {
             const newItems = req.body;
+            console.log(newItems)
             const result = await partsCollection.insertOne(newItems)
             res.send(result)
         })
@@ -58,6 +59,14 @@ async function run() {
         app.get('/allOrder', async (req, res)=>{
             const query = {}
             const result = await bookingCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.delete('/allOrder/:id', async (req, res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await bookingCollection.deleteOne(query)
+            console.log(result)
             res.send(result)
         })
 
