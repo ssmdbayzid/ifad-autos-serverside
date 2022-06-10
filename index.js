@@ -31,6 +31,7 @@ async function run() {
         app.get('/part', async (req, res) => {
             const query = {};
             const result = await partsCollection.find(query).toArray()
+            console.log(result)
             res.send(result)
         })
         
